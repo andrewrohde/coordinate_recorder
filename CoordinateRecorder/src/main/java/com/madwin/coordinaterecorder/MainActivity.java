@@ -40,6 +40,19 @@ public class MainActivity extends Activity {
     String filename = "coordinates" + date_time + ".txt";
     File file = new File (file_location, filename);
 
+    double latitude_current = 0;
+    double latitude_previous = 0;
+    double longitude_current = 0;
+    double longitude_previous = 0;
+    int second_current;
+    int second_previous;
+    int minute_previous;
+    int minute_current;
+    Boolean first_entry = true;
+    double speed;
+    double d2r = (180 / Math.PI);
+
+    double current_time, previous_time;
 
     LocationManager locationManager;
     LocationListener locationListener;
@@ -68,12 +81,44 @@ public class MainActivity extends Activity {
             @Override
             public void onLocationChanged(Location location) {
 
+                if (first_entry){
+                    latitude_current = location.getLatitude();
+                    longitude_current = location.getLatitude();
+                    c = Calendar.getInstance();
+                    second_current = c.get(Calendar.SECOND);
+                    minute_current = c.get(Calendar.MINUTE);
+
+
+                }
+
+
+                if (!first_entry){
+
+                    latitude_previous = latitude_current;
+                    longitude_previous = longitude_current;
+
+                    second_previous = second_current;
+                    minute_previous = minute_current;
+
+                    c = Calendar.getInstance();
+                    latitude_current = location.getLatitude();
+                    longitude_current = location.getLatitude();
+                    second_current = c.get(Calendar.SECOND);
+                    minute_current = c.get(Calendar.MINUTE);
+                }
+
+                    first_entry = false;
+
+                mCalculateSpeed();
+
                 String coordinates = Double.toString(location.getLatitude()) + ", "
                         + Double.toString(location.getLongitude());
 
                 Log.d(TAG, "coordinates = " + coordinates);
                 TextView display_coordinates = (TextView)findViewById(R.id.coordinate_display);
+                TextView display_speed = (TextView)findViewById(R.id.current_speed);
                 display_coordinates.setText(coordinates);
+                display_speed.setText(Double.toString(speed));
                 writeToFile(coordinates);
             }
 
@@ -104,8 +149,35 @@ public class MainActivity extends Activity {
         //locationManager.removeGpsStatusListener((GpsStatus.Listener) locationListener);
 
     }
-	
-	//private View.OnClickListener startRecording;
+
+    private void mCalculateSpeed() {
+
+       // double distance = Math.sqrt((Math.pow(((latitude_current - latitude_previous) * d2r),2)
+        //        + (Math.pow(((longitude_current - longitude_previous) * d2r),2))));
+
+        double dlong = (longitude_current - longitude_previous) * d2r;
+        double dlat = (latitude_current - latitude_previous) * d2r;
+        double a =
+                Math.pow(Math.sin(dlat / 2.0), 2)
+                        + Math.cos(latitude_previous*d2r)
+                        * Math.cos(latitude_current*d2r)
+                        * Math.pow(Math.sin(dlong / 2.0), 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double distance = 3963 * c; /// * 5280 for feet,,,,3956 for mi
+
+        current_time = (((double) minute_current / 60) + ((double) second_current / 3600));
+        previous_time = (((double) minute_previous / 60) + ((double) second_previous / 3600));
+
+        double time = current_time - previous_time;
+
+        speed = distance / time;
+
+        Log.d(LOG_TAG, "Distance = " + distance);
+
+
+    }
+
+    //private View.OnClickListener startRecording;
 
     private View.OnClickListener killListener = new View.OnClickListener() {
         @Override

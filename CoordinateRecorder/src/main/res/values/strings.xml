@@ -4,6 +4,8 @@
     <string name="app_name">CoordinateRecorder</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
-    <string name="file_location">Coordinate point file is stored in /data/data/com.madwin.coordinaterecorder/</string>
+    <string name="file_location">Coordinate point file is stored in /sdcard/coordinate_recorder</string>
+    <string name="speed">Speed (mph)</string>
+
 
 </resources>
