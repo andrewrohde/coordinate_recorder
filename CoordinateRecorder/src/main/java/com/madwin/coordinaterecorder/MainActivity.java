@@ -103,13 +103,18 @@ public class MainActivity extends Activity {
                     c = Calendar.getInstance();
                     latitude_current = location.getLatitude();
                     longitude_current = location.getLatitude();
+
+
                     second_current = c.get(Calendar.SECOND);
                     minute_current = c.get(Calendar.MINUTE);
                 }
 
                     first_entry = false;
 
-                mCalculateSpeed();
+                Float speed = location.getSpeed();
+                Double current_speed = speed * 2.23694;
+
+               // mCalculateSpeed();
 
                 String coordinates = Double.toString(location.getLatitude()) + ", "
                         + Double.toString(location.getLongitude());
@@ -118,7 +123,7 @@ public class MainActivity extends Activity {
                 TextView display_coordinates = (TextView)findViewById(R.id.coordinate_display);
                 TextView display_speed = (TextView)findViewById(R.id.current_speed);
                 display_coordinates.setText(coordinates);
-                display_speed.setText(Double.toString(speed));
+                display_speed.setText(Double.toString(current_speed));
                 writeToFile(coordinates);
             }
 
@@ -154,6 +159,8 @@ public class MainActivity extends Activity {
 
        // double distance = Math.sqrt((Math.pow(((latitude_current - latitude_previous) * d2r),2)
         //        + (Math.pow(((longitude_current - longitude_previous) * d2r),2))));
+
+
 
         double dlong = (longitude_current - longitude_previous) * d2r;
         double dlat = (latitude_current - latitude_previous) * d2r;
@@ -246,6 +253,9 @@ public class MainActivity extends Activity {
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
+
+
+
 
     
 }
