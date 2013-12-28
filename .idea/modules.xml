@@ -2,9 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/CoordinateRecorder/CoordinateRecorder.iml" filepath="$PROJECT_DIR$/CoordinateRecorder/CoordinateRecorder.iml" />
-      <module fileurl="file://$PROJECT_DIR$/CoordinateRecorderProject.iml" filepath="$PROJECT_DIR$/CoordinateRecorderProject.iml" />
-      <module fileurl="file://$PROJECT_DIR$/coordinate_recorder.iml" filepath="$PROJECT_DIR$/coordinate_recorder.iml" />
+      <module fileurl="file://$PROJECT_DIR$/CoordinateRecorder.iml" filepath="$PROJECT_DIR$/CoordinateRecorder.iml" />
+      <module fileurl="file://$PROJECT_DIR$/CoordinateRecorder/CoordinateRecorder-CoordinateRecorder.iml" filepath="$PROJECT_DIR$/CoordinateRecorder/CoordinateRecorder-CoordinateRecorder.iml" />
     </modules>
   </component>
 </project>
