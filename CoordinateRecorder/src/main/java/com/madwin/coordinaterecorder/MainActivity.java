@@ -1,10 +1,12 @@
 package com.madwin.coordinaterecorder;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.app.Activity;
 import android.util.Log;
@@ -193,6 +195,7 @@ public class MainActivity extends Activity {
         return (int) (location.getSpeed() * 2.23694);
     }
 
+    @TargetApi(Build.VERSION_CODES.KITKAT)
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
