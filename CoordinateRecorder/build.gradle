@@ -11,6 +11,13 @@ apply plugin: 'android'
 repositories {
     mavenCentral()
 }
+dependencies{
+    compile 'com.android.support:support-v4:19.0.1'
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: '*.jar')
+}
 
 android {
     compileSdkVersion 19
@@ -22,13 +29,4 @@ android {
         versionCode 1
         versionName "1.0"
     }
-    buildTypes {
-        release {
-            runProguard false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
-        }
-    }
-}
-
-dependencies {
 }

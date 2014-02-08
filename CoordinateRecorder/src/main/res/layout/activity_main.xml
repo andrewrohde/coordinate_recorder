@@ -13,7 +13,7 @@
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Current Coordinates"
+        android:text="@string/current_coordinates"
         android:textAlignment="center"
         android:gravity="center"
         android:textSize="30sp"
@@ -29,7 +29,7 @@
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="@string/hello_world"
+        android:text="@string/coordinates_display"
         android:id="@+id/coordinate_display"
         android:textColor="@android:color/white"
         android:gravity="center"
@@ -37,6 +37,15 @@
         android:textSize="20sp"
         android:paddingTop="20sp"/>
 
+    <Button
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:gravity="center"
+        android:layout_marginTop="30sp"
+        android:text="Start Recording"
+        android:id="@+id/start"
+        android:textColor="@android:color/white"
+        />
     <Button
         android:layout_height="wrap_content"
         android:layout_width="fill_parent"
@@ -53,8 +62,22 @@
         android:layout_height="wrap_content"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/activity_vertical_margin"
-        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingTop="0dp"
+        android:paddingBottom="0dp"
+        tools:context=".MainActivity"
+        android:background="@android:color/black"
+        android:orientation="horizontal"
+        android:layout_gravity="center_horizontal">
+
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="0dp"
+        android:paddingBottom="0dp"
         tools:context=".MainActivity"
         android:background="@android:color/black"
         android:orientation="vertical"
@@ -75,34 +98,63 @@
             android:layout_height="1dp"
             android:background="@android:color/darker_gray"/>
 
+        <TextView
+            android:id="@+id/current_speed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/speed"
+            android:textColor="@android:color/white"
+            android:gravity="center"
+            android:textAlignment="center"
+            android:textSize="15sp"
+            android:paddingTop="0sp"/>
+
         </LinearLayout>
+
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:tools="http://schemas.android.com/tools"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin"
-            android:paddingTop="@dimen/activity_vertical_margin"
-            android:paddingBottom="@dimen/activity_vertical_margin"
+            android:paddingTop="0dp"
+            android:paddingBottom="0dp"
             tools:context=".MainActivity"
             android:background="@android:color/black"
             android:orientation="vertical"
             android:layout_gravity="center_horizontal">
 
-    <TextView
-        android:id="@+id/current_speed"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/speed"
-        android:textColor="@android:color/white"
-        android:gravity="center"
-        android:textAlignment="center"
-        android:textSize="15sp"
-        android:paddingTop="0sp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/bearing"
+            android:textColor="@android:color/white"
+            android:gravity="center"
+            android:textAlignment="center"
+            android:textSize="15sp"
+            android:paddingTop="20sp"/>
 
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"/>
+
+        <TextView
+            android:id="@+id/bearing"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/bearing"
+            android:textColor="@android:color/white"
+            android:gravity="center"
+            android:textAlignment="center"
+            android:textSize="15sp"
+            android:paddingTop="3dp"/>
 
         </LinearLayout>
+        </LinearLayout>
+
     <TextView
+        android:id="@+id/file_location"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:text="@string/file_location"

@@ -1,16 +1,21 @@
 package com.madwin.coordinaterecorder;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
-
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.app.Activity;
+import android.os.Environment;
+import android.preference.PreferenceManager;
+import android.support.v4.app.ActionBarDrawerToggle;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -20,30 +25,27 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.DecimalFormat;
 import java.util.Calendar;
 
 
 public class MainActivity extends Activity {
 
-
-
-    String LOG_TAG = "coordinate_recorder";
-
     LocationManager locationManager;
     LocationListener locationListener;
     File file;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mCreateFile();
 
         Button kill = (Button)findViewById(R.id.kill_button);
         kill.setOnClickListener(killListener);
+
+        Button start = (Button)findViewById(R.id.start);
+        start.setOnClickListener(startListener);
 
 
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
@@ -53,15 +55,17 @@ public class MainActivity extends Activity {
             public void onLocationChanged(Location location) {
 
 		        int current_speed = mGetSpeed(location);
-
-                String coordinates = Double.toString(location.getLatitude()) + ", "
-                        + Double.toString(location.getLongitude());
+                float bearing = mGetBearing(location);
 
                 TextView display_coordinates = (TextView)findViewById(R.id.coordinate_display);
                 TextView display_speed = (TextView)findViewById(R.id.current_speed);
-                display_coordinates.setText(coordinates);
+                TextView display_bearing = (TextView)findViewById(R.id.bearing);
+                display_bearing.setText(Float.toString(bearing));
+                display_coordinates.setText(Double.toString(location.getLatitude()) + ", "
+                        + Double.toString(location.getLongitude()));
                 display_speed.setText(Integer.toString(current_speed));
-                writeToFile(coordinates);
+                writeToFile( Double.toString(location.getLatitude()) + ", "
+                        + Double.toString(location.getLongitude()) + ", " + Float.toString(bearing));
             }
 
             @Override
@@ -86,13 +90,12 @@ public class MainActivity extends Activity {
             }
         };
 
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-        //locationManager.removeGpsStatusListener((GpsStatus.Listener) locationListener);
+        TextView save_location = (TextView)findViewById(R.id.file_location);
+        save_location.setText("Data File Location : " + mGetFileLocation());
+
 
     }
 
-
-    //private View.OnClickListener startRecording;
 
     private View.OnClickListener killListener = new View.OnClickListener() {
         @Override
@@ -103,6 +106,23 @@ public class MainActivity extends Activity {
 
         }
     };
+
+    private View.OnClickListener startListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+
+            mCreateFile();
+            writeToFile("Latitude, Longitude, Bearing");
+
+
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                    Long.parseLong(preferences.getString("UpdateInterval", "0")), 0, locationListener);
+
+        }
+    };
+
 
     private void writeToFile(String coordinates) {
         try{
@@ -116,6 +136,107 @@ public class MainActivity extends Activity {
             e.printStackTrace();
         }
     }
+
+
+    private void mCreateFile() {
+
+        file = new File (mGetFileLocation(), mGetFileName());
+
+        mGetFileLocation().mkdirs();
+        try{
+            if (file.createNewFile()) {
+             Log.d("File", "File was Created at : " + file.getPath());
+            }else{
+             Log.d("File", "File was not Created!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            }
+        }catch (Exception e){
+            Log.d("File", "EXCEPTION CAUGHT-----File was not Created!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        }
+
+    }
+
+    public String mGetFileName() {
+
+        Calendar c = Calendar.getInstance();
+        int seconds = c.get(Calendar.SECOND);
+        int minute = c.get(Calendar.MINUTE);
+        int hour = c.get(Calendar.HOUR);
+        int day = c.get(Calendar.DATE);
+        int month = c.get(Calendar.MONTH);
+        int year = c.get(Calendar.YEAR);
+        String date_time = String.valueOf(year) + "-" + String.valueOf(month) + "-" +
+                String.valueOf(day) + "-" + String.valueOf(hour) + "-" +  String.valueOf(minute) +
+                "-" +  String.valueOf(seconds);
+        return ("coordinates" + date_time + ".txt");
+    }
+
+    public File mGetFileLocation() {
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        return new File(preferences.getString("SaveLocation", Environment.getExternalStorageDirectory().getPath() + "/coordinate_recorder"));
+
+    }
+
+    public int mGetSpeed(Location location) {
+
+        return (int) (location.getSpeed() * 2.23694);
+    }
+
+    public float mGetBearing(Location location) {
+        DecimalFormat df = new DecimalFormat("##.####");
+
+        return Float.parseFloat(df.format(location.getBearing()));
+    }
+
+    @TargetApi(Build.VERSION_CODES.KITKAT)
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) {
+            View decorView = this.getWindow().getDecorView();
+            decorView.setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                          //  | View.SYSTEM_UI_FLAG_FULLSCREEN
+                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);}
+    }
+
+
+    private void mShowSettings() {
+        Intent Preferences = new Intent(getBaseContext(), PreferencesUI.class);
+        this.startActivity(Preferences);
+        finish();
+    }
+
+
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.activity_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.settings:
+                mShowSettings();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+}
+
+
+
 
    /* private String readFromFile() {
 
@@ -148,66 +269,3 @@ public class MainActivity extends Activity {
     }
 
     */
-
-    private void mCreateFile(){
-
-        file = new File (mGetFileLocation(), mGetFileName());
-
-        try {
-            file.createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.e("ERRR", "Could not create file",e);
-        }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    public String mGetFileName() {
-
-        Calendar c = Calendar.getInstance();
-        int seconds = c.get(Calendar.SECOND);
-        int minute = c.get(Calendar.MINUTE);
-        int hour = c.get(Calendar.HOUR);
-        int day = c.get(Calendar.DATE);
-        int month = c.get(Calendar.MONTH);
-        int year = c.get(Calendar.YEAR);
-        String date_time = String.valueOf(year) + "-" + String.valueOf(month) + "-" +
-                String.valueOf(day) + "-" + String.valueOf(hour) + "-" +  String.valueOf(minute) +
-                "-" +  String.valueOf(seconds);
-
-        return ("coordinates" + date_time + ".txt");
-    }
-
-    public String mGetFileLocation() {
-
-        String file_location = "/sdcard/coordinate_recorder/";
-        return file_location;
-    }
-
-    public int mGetSpeed(Location location) {
-
-        return (int) (location.getSpeed() * 2.23694);
-    }
-
-    @TargetApi(Build.VERSION_CODES.KITKAT)
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-        if (hasFocus) {
-            View decorView = this.getWindow().getDecorView();
-            decorView.setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                          //  | View.SYSTEM_UI_FLAG_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);}
-    }
-
-}
