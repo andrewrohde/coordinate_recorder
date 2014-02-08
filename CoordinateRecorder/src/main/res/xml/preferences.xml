@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <EditTextPreference
+        android:title="Save Location"
+        android:key="SaveLocation"
+        android:summary="Enter location for file to be saved"
+        android:id="@+id/SaveLocationPreference"
+        android:defaultValue="/storage/emulated/0/coordinate_recorder/"/>
+
+    <EditTextPreference
+        android:title="Update Interval (seconds)"
+        android:summary="The longer the interval the less drain on battery"
+        android:key="UpdateInterval"
+        android:defaultValue="0"
+        android:numeric="integer"/>
+
+</PreferenceScreen>
