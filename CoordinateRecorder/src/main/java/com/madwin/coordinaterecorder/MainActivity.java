@@ -34,6 +34,8 @@ public class MainActivity extends Activity {
     LocationManager locationManager;
     LocationListener locationListener;
     File file;
+    Calendar calendar;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +53,7 @@ public class MainActivity extends Activity {
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
 
-                @Override
+            @Override
             public void onLocationChanged(Location location) {
 
 		        int current_speed = mGetSpeed(location);
@@ -64,8 +66,13 @@ public class MainActivity extends Activity {
                 display_coordinates.setText(Double.toString(location.getLatitude()) + ", "
                         + Double.toString(location.getLongitude()));
                 display_speed.setText(Integer.toString(current_speed));
+
+                calendar = Calendar.getInstance();
                 writeToFile( Double.toString(location.getLatitude()) + ", "
-                        + Double.toString(location.getLongitude()) + ", " + Float.toString(bearing));
+                        + Double.toString(location.getLongitude()) + ", " + Float.toString(bearing)
+                        + ", " + calendar.get(Calendar.HOUR) + ":" + calendar.get(Calendar.MINUTE)
+                        + ":" + calendar.get(Calendar.SECOND));
+
             }
 
             @Override
@@ -112,13 +119,15 @@ public class MainActivity extends Activity {
         public void onClick(View v) {
 
             mCreateFile();
-            writeToFile("Latitude, Longitude, Bearing");
+            writeToFile("Latitude, Longitude, Bearing, Time");
 
 
-            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+            SharedPreferences preferences = PreferenceManager
+                    .getDefaultSharedPreferences(getBaseContext());
 
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                    Long.parseLong(preferences.getString("UpdateInterval", "0")), 0, locationListener);
+                    Long.parseLong(preferences
+                            .getString("UpdateInterval", "0")) * 1000, 0 ,locationListener);
 
         }
     };
@@ -127,7 +136,8 @@ public class MainActivity extends Activity {
     private void writeToFile(String coordinates) {
         try{
 
-            OutputStream fileOutputStream = new BufferedOutputStream(new FileOutputStream(file, true));
+            OutputStream fileOutputStream = new BufferedOutputStream(
+                    new FileOutputStream(file, true));
             fileOutputStream.write(coordinates.getBytes());
             fileOutputStream.write(System.getProperty("line.separator").getBytes());
             fileOutputStream.close();
@@ -156,14 +166,13 @@ public class MainActivity extends Activity {
     }
 
     public String mGetFileName() {
-
-        Calendar c = Calendar.getInstance();
-        int seconds = c.get(Calendar.SECOND);
-        int minute = c.get(Calendar.MINUTE);
-        int hour = c.get(Calendar.HOUR);
-        int day = c.get(Calendar.DATE);
-        int month = c.get(Calendar.MONTH);
-        int year = c.get(Calendar.YEAR);
+        calendar = Calendar.getInstance();
+        int seconds = calendar.get(Calendar.SECOND);
+        int minute = calendar.get(Calendar.MINUTE);
+        int hour = calendar.get(Calendar.HOUR);
+        int day = calendar.get(Calendar.DATE);
+        int month = calendar.get(Calendar.MONTH);
+        int year = calendar.get(Calendar.YEAR);
         String date_time = String.valueOf(year) + "-" + String.valueOf(month) + "-" +
                 String.valueOf(day) + "-" + String.valueOf(hour) + "-" +  String.valueOf(minute) +
                 "-" +  String.valueOf(seconds);
@@ -172,8 +181,10 @@ public class MainActivity extends Activity {
 
     public File mGetFileLocation() {
 
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        return new File(preferences.getString("SaveLocation", Environment.getExternalStorageDirectory().getPath() + "/coordinate_recorder"));
+        SharedPreferences preferences = PreferenceManager
+                .getDefaultSharedPreferences(getBaseContext());
+        return new File(preferences.getString("SaveLocation", Environment
+                .getExternalStorageDirectory().getPath() + "/coordinate_recorder"));
 
     }
 
